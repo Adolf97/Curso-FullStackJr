@@ -14,6 +14,7 @@ app.put("/users:id", user.update)
 app.patch("/users:id", user.update)
 app.delete("/users:id", user.destroy)
 
+app.use(express.static("app"))
 app.get("/", (req, res) => {
     console.log(__dirname)
     res.sendFile(`${__dirname}/index.html`)
