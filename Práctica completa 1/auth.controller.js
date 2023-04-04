@@ -4,8 +4,8 @@ const { expressjwt: ejwt } = require("express-jwt")
 const jsonwt = require("jsonwebtoken")
 const User = require("./user.model")
 
-const validateJwt = ejwt({ secret: process.env.SECRET, algorithms: ["HS256"] })
-const signToken = _id => jsonwt.sign({ _id }, process.env.SECRET)
+const validateJwt = ejwt({ secret: "mi-string-secreto", algorithms: ["HS256"] })
+const signToken = _id => jsonwt.sign({ _id }, "mi-string-secreto")
 
 const findAndAssignUser = async (req, res, next) => {
     try {

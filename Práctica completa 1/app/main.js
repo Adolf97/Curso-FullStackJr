@@ -69,6 +69,23 @@ const agentesPage = () => {
 	getAgentes()
 }
 
+const loadRegisterTemplate = () => {}
+const addRegisterListener = () => {}
+const goToLoginListener = () => {}
+
+const registerPage = () => {
+	console.log("Página de registro")
+	loadRegisterTemplate()
+	addRegisterListener()
+	goToLoginListener()
+}
+
+const loginPage = () => {
+	loadLoginTemplate()
+	addLoginListener()
+	goToRegisterListener()
+}
+
 const loadLoginTemplate = () => {
 	const template = `
 		<h1>Login</h1>
@@ -83,11 +100,44 @@ const loadLoginTemplate = () => {
 			</div>
 			<button type="submit">Enviar</button>
 		</form>
+		<a href="#" id="register">Registrarse</a>
 		<div id="error"></div>
 	`
 
 	const body = document.getElementsByTagName('body')[0]
 	body.innerHTML = template
+}
+
+const goToRegisterListener = () => {
+	const goToRegister = document.getElementById("register")
+	goToRegister.onclick = (e) => {
+		e.preventDefault
+		registerPage()
+	}
+}
+
+const addLoginListener = () => {
+	const loginForm = document.getElementById("login-form")
+	loginForm.onsubmit = async (e) => {
+		e.preventDefault()
+		const formData = new FormData(loginForm)
+		const data = Object.fromEntries(formData.entries())
+
+		const response = await fetch("/login", {
+			method: "POST",
+			body: JSON.stringify(data),
+			headers: {
+				"Content-Type": "application/json",
+			}
+		})
+		const responseData = await response.text()
+		if(response.status >= 300) {
+			const errorNode = document.getElementById("error")
+			errorNode.innerHTML = responseData;
+		} else {
+			console.log(responseData)
+		}
+	}
 }
 
 window.onload = () => {
@@ -96,5 +146,6 @@ window.onload = () => {
 		agentesPage()
 	} else {
 		loadLoginTemplate()
+		addLoginListener()
 	}
 }
