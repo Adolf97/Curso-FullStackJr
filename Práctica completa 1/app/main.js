@@ -100,7 +100,7 @@ const loadLoginTemplate = () => {
 			</div>
 			<button type="submit">Enviar</button>
 		</form>
-		<a href="#" id="register">Registrarse</a>
+		<a href="#" id="register" onclick="gotoRegisterListener()">Registrarse</a>
 		<div id="error"></div>
 	`
 
@@ -108,12 +108,12 @@ const loadLoginTemplate = () => {
 	body.innerHTML = template
 }
 
-const goToRegisterListener = () => {
-	const goToRegister = document.getElementById("register")
-	goToRegister.onclick = (e) => {
+const gotoRegisterListener = () => {
+	const gotoRegister = document.getElementById("register")
+	gotoRegister.addEventListener("click", (e) => {
 		e.preventDefault
 		registerPage()
-	}
+	})
 }
 
 const addLoginListener = () => {
