@@ -69,8 +69,51 @@ const agentesPage = () => {
 	getAgentes()
 }
 
-const loadRegisterTemplate = () => {}
-const addRegisterListener = () => {}
+const loadRegisterTemplate = () => {
+	const template = `
+		<h1>Register</h1>
+		<form id="register-form">
+			<div>
+				<label>Correo</label>
+				<input name="email" />
+			</div>
+			<div>
+				<label>Contraseña</label>
+				<input name="password" />
+			</div>
+			<button type="submit">Enviar</button>
+		</form>
+		<a href="#" id="login">Iniciar Sesión</a>
+		<div id="error"></div>
+	`
+
+	const body = document.getElementsByTagName('body')[0]
+	body.innerHTML = template
+}
+
+const addRegisterListener = () => {
+	const registerForm = document.getElementById('register-form')
+	registerForm.onsubmit = async (e) => {
+		e.preventDefault()
+		const formData = new FormData(registerForm)
+		const data = Object.fromEntries(formData.entries())
+
+		const response = await fetch('/register', {
+			method: 'POST',
+			body: JSON.stringify(data),
+			headers: {
+				'Content-Type': 'application/json',
+			}
+		})
+		const responseData = await response.text()
+		if(response.status >= 300) {
+			const errorNode = document.getElementById("error")
+			errorNode.innerHTML = responseData;
+		} else {
+			console.log(responseData)
+		}
+	}
+}
 const goToLoginListener = () => {}
 
 const registerPage = () => {
@@ -100,7 +143,7 @@ const loadLoginTemplate = () => {
 			</div>
 			<button type="submit">Enviar</button>
 		</form>
-		<a href="#" id="register" onclick="gotoRegisterListener()">Registrarse</a>
+		<a href="#" id="register">Registrarse</a>
 		<div id="error"></div>
 	`
 
@@ -108,23 +151,23 @@ const loadLoginTemplate = () => {
 	body.innerHTML = template
 }
 
-const gotoRegisterListener = () => {
-	const gotoRegister = document.getElementById("register")
-	gotoRegister.addEventListener("click", (e) => {
-		e.preventDefault
+const goToRegisterListener = () => {
+	const gotoRegister = document.getElementById('register')
+	gotoRegister.onclick = (e) => {
+		e.preventDefault()
 		registerPage()
-	})
+	}
 }
 
 const addLoginListener = () => {
-	const loginForm = document.getElementById("login-form")
+	const loginForm = document.getElementById('login-form')
 	loginForm.onsubmit = async (e) => {
 		e.preventDefault()
 		const formData = new FormData(loginForm)
 		const data = Object.fromEntries(formData.entries())
 
-		const response = await fetch("/login", {
-			method: "POST",
+		const response = await fetch('/login', {
+			method: 'POST',
 			body: JSON.stringify(data),
 			headers: {
 				"Content-Type": "application/json",
@@ -145,7 +188,6 @@ window.onload = () => {
 	if(isLoggedIn) {
 		agentesPage()
 	} else {
-		loadLoginTemplate()
-		addLoginListener()
+		loginPage()
 	}
 }
