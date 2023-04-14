@@ -19,7 +19,11 @@ const loadInitialTemplate = () => {
 }
 
 const getAgentes = async () => {
-	const response = await fetch('/agentes')
+	const response = await fetch('/agentes', {
+		headers: {
+			Authorization: localStorage.getItem('jwt')
+		}
+	})
 	const agentes = await response.json()
 	const template = agente => `
 		<li>
@@ -31,9 +35,12 @@ const getAgentes = async () => {
 	agenteList.innerHTML = agentes.map(agente => template(agente)).join('')
 	agentes.forEach(agente => {
 		agenteNode = document.querySelector(`[data-id="${agente._id}"]`)
-		animalNode.onclick = async e => {
+		agenteNode.onclick = async e => {
 			await fetch(`/agentes/${agente._id}`, {
 				method: 'DELETE',
+				headers: {
+					Authorization: localStorage.getItem('jwt')
+				}
 			})
 			agenteNode.parentNode.remove()
 			alert('Eliminado con éxito')
@@ -51,7 +58,8 @@ const addFormListener = () => {
 			method: 'POST',
 			body: JSON.stringify(data),
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				Authorization: localStorage.getItem('jwt')
 			}
 		})
 		agenteForm.reset()
@@ -91,30 +99,13 @@ const loadRegisterTemplate = () => {
 	body.innerHTML = template
 }
 
-const addRegisterListener = () => {
-	const registerForm = document.getElementById('register-form')
-	registerForm.onsubmit = async (e) => {
+const goToLoginListener = () => {
+	const gotoLogin = document.getElementById('login')
+	gotoLogin.onclick = (e) => {
 		e.preventDefault()
-		const formData = new FormData(registerForm)
-		const data = Object.fromEntries(formData.entries())
-
-		const response = await fetch('/register', {
-			method: 'POST',
-			body: JSON.stringify(data),
-			headers: {
-				'Content-Type': 'application/json',
-			}
-		})
-		const responseData = await response.text()
-		if(response.status >= 300) {
-			const errorNode = document.getElementById("error")
-			errorNode.innerHTML = responseData;
-		} else {
-			console.log(responseData)
-		}
+		loginPage()
 	}
 }
-const goToLoginListener = () => {}
 
 const registerPage = () => {
 	console.log("Página de registro")
@@ -159,14 +150,14 @@ const goToRegisterListener = () => {
 	}
 }
 
-const addLoginListener = () => {
-	const loginForm = document.getElementById('login-form')
-	loginForm.onsubmit = async (e) => {
+const authListener = action => () => {
+	const form = document.getElementById(`${action}-form`)
+	form.onsubmit = async (e) => {
 		e.preventDefault()
-		const formData = new FormData(loginForm)
+		const formData = new FormData(form)
 		const data = Object.fromEntries(formData.entries())
 
-		const response = await fetch('/login', {
+		const response = await fetch(`/${action}`, {
 			method: 'POST',
 			body: JSON.stringify(data),
 			headers: {
@@ -178,10 +169,13 @@ const addLoginListener = () => {
 			const errorNode = document.getElementById("error")
 			errorNode.innerHTML = responseData;
 		} else {
-			console.log(responseData)
+			localStorage.setItem('jwt', `Bearer ${responseData}`)
+			agentesPage()
 		}
 	}
 }
+const addRegisterListener = authListener('register')
+const addLoginListener = authListener('login')
 
 window.onload = () => {
 	const isLoggedIn = checkLogin()
