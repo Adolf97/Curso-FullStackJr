@@ -1,15 +1,15 @@
 const express = require("express")
 const bcrypt = require("bcrypt")
 const { expressjwt: ejwt } = require("express-jwt")
-const jsonwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken")
 const User = require("./user.model")
 
 const validateJwt = ejwt({ secret: "mi-string-secreto", algorithms: ["HS256"] })
-const signToken = _id => jsonwt.sign({ _id }, "mi-string-secreto")
+const signToken = _id => jwt.sign({ _id }, "mi-string-secreto")
 
 const findAndAssignUser = async (req, res, next) => {
     try {
-        const user = await User.findById(req.user._id)
+        const user = await User.findById(req.auth._id)
         if(!user) {
             return res.status(401).end()
         }
